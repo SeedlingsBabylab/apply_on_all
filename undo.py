@@ -48,6 +48,13 @@ def process_subject_month_files(annot_folder_full, script):
                 move(os.path.join(annot_folder_full, newest), annot_file_full)
                 #apply_script(script, annot_file_full)
 
+def month_should_be_processed(age_folder, month):
+    if month[0]=='-' and age_folder[0:2] not in month:
+        return True
+    if month[0]=='+' and age_folder[0:2] in month:
+        return True
+    return False
+
 def process_subject_files(subject_folder_full, month, script):
     ages = os.listdir(subject_folder_full)
     ages.sort()
@@ -61,7 +68,12 @@ def process_subject_files(subject_folder_full, month, script):
                 process_subject_month_files(annot_folder_full, script)
 
 
-
+def should_be_processed(subject_folder, subject):
+    if subject[0]=='-' and subject_folder[0:2] not in subject:
+        return True
+    if subject[0]=='+' and subject_folder[0:2] in subject:
+        return True
+    return False
 
 def process_files(sub_path, script, subject, month):
     if not os.path.isdir(sub_path):
@@ -74,7 +86,7 @@ def process_files(sub_path, script, subject, month):
     for subject_folder in children:
         if subject_folder.isdigit():
             # specific subject to process or all subjects
-            if (subject and subject_folder[0:2]==subject) or not subject:
+            if (subject and int(subject_folder[0:2]) in subject) or not subject:
                 subject_folder_full = os.path.join(sub_path, subject_folder)
                 if not os.path.isdir(subject_folder_full):
                     continue
@@ -87,10 +99,10 @@ def process_files(sub_path, script, subject, month):
 if __name__ == "__main__":
     sub_path = sys.argv[1]
 
-    subject = sys.argv[2]
+    subject = sys.argv[2].split('_') #contains something like +_11_12 or -_11_12
     if subject == "--all":
         subject = ''
-    month = sys.argv[3]
+    month = sys.argv[3].split('_') ##contains something like +_11_12 or -_11_12
     if month == "--all":
         month = ''
 
